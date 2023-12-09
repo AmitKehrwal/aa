@@ -1,8 +1,8 @@
 import os
 import asyncio
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from playwright.async_api import async_playwright
+from bs4 import BeautifulSoup
 import nest_asyncio
 import random
 import getindianname as name
@@ -11,6 +11,10 @@ nest_asyncio.apply()
 
 # Flag to indicate whether the script is running
 running = True
+
+async def get_page_content(page, selector):
+    element = await page.wait_for_selector(selector, timeout=200000)
+    return await element.inner_html()
 
 async def start(name, user, wait_time, meetingcode, passcode):
     print(f"{name} started!")
@@ -44,6 +48,8 @@ async def start(name, user, wait_time, meetingcode, passcode):
         try:
             query = '//button[text()="Join Audio by Computer"]'
             await asyncio.sleep(13)
+            mic_button_html = await get_page_content(page, query)
+            mic_button_soup = BeautifulSoup(mic_button_html, 'html.parser')
             mic_button_locator = await page.wait_for_selector(query, timeout=350000)
             await asyncio.sleep(10)
             await mic_button_locator.evaluate_handle('node => node.click()')
