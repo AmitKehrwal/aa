@@ -14,3 +14,8 @@ sudo apt-get update
 
 # Install Brave browser
 sudo apt-get install -y brave-browser
+
+# Install Python packages
+pip install playwright
+playwright install
+pip install getindianname
