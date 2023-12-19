@@ -6,9 +6,16 @@ async def start(thread_name, user, wait_time, meetingcode, passcode):
     print(f"{thread_name} started!")
 
     async with async_playwright() as p:
+        # Use --use-file-for-fake-audio-capture to simulate microphone input
         browser = await p.chromium.launch(
             headless=True,
-            args=['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--enable-logging', '--v=1'],
+            args=[
+                '--use-fake-device-for-media-stream',
+                '--use-fake-ui-for-media-stream',
+                '--enable-logging',
+                '--v=1',
+                '--use-file-for-fake-audio-capture=/dev/snd/controlC0',
+            ],
             executable_path="/usr/bin/brave-browser"
         )
 
