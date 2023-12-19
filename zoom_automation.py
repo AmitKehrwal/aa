@@ -1,22 +1,23 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from playwright.async_api import async_playwright
-import indian_names
 
-# ... (other imports)
+# Global flag to indicate whether the script is running
+running = True
 
-async def start(thread_name, wait_time, meetingcode, passcode):
+async def start(thread_name, user, wait_time, meetingcode, passcode):
     print(f"{thread_name} started!")
 
     async with async_playwright() as p:
-        # Use --use-file-for-fake-audio-capture to simulate microphone input
+        # Launch Brave browser in non-headless mode with hardware permissions
         browser = await p.chromium.launch(
-            headless=True,
+            headless=False,  # Set to True for production, False for development/testing
             args=[
                 '--use-fake-device-for-media-stream',
                 '--use-fake-ui-for-media-stream',
                 '--enable-logging',
                 '--v=1',
-                '--use-file-for-fake-audio-capture=/dev/snd/controlC0',
+                '--enable-experimental-web-platform-features',  # Necessary for some features
             ],
             executable_path="/usr/bin/brave-browser"
         )
@@ -27,10 +28,16 @@ async def start(thread_name, wait_time, meetingcode, passcode):
         context = await browser.new_context()
         page = await context.new_page()
 
-        # Generate a random username using the indian_names module
-        user = indian_names.get_full_name()
+        # Grant camera and microphone permissions directly
+        await context.grant_permissions(["camera", "microphone"])
 
         await page.goto(f'https://zoom.us/wc/join/{meetingcode}', timeout=200000)
+
+        # Handle any permission prompts (modify based on actual prompts)
+        try:
+            await page.click('//button[@id="allow-camera-microphone-button"]', timeout=5000)
+        except Exception as e:
+            pass
 
         try:
             await page.click('//button[@id="onetrust-accept-btn-handler"]', timeout=5000)
