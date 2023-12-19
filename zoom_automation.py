@@ -5,7 +5,7 @@ from playwright.async_api import async_playwright
 # Global flag to indicate whether the script is running
 running = True
 
-async def start(thread_name, user, wait_time, meetingcode, passcode):
+async def start(thread_name, wait_time, meetingcode, passcode):
     print(f"{thread_name} started!")
 
     async with async_playwright() as p:
