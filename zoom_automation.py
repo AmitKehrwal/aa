@@ -2,6 +2,8 @@ import asyncio
 from playwright.async_api import async_playwright
 import indian_names
 
+# ... (other imports)
+
 async def start(thread_name, wait_time, meetingcode, passcode):
     print(f"{thread_name} started!")
 
@@ -24,6 +26,10 @@ async def start(thread_name, wait_time, meetingcode, passcode):
 
         context = await browser.new_context()
         page = await context.new_page()
+
+        # Generate a random username using the indian_names module
+        user = indian_names.get_full_name()
+
         await page.goto(f'https://zoom.us/wc/join/{meetingcode}', timeout=200000)
 
         try:
@@ -62,3 +68,4 @@ async def start(thread_name, wait_time, meetingcode, passcode):
         print(f"{thread_name} ended!")
 
         await browser.close()
+
